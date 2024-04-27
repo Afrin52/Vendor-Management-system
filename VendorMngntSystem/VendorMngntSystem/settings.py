@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-ft5rfp(-+9d-8f9387&p6yl!e41^g&uae(_w-3u#)z__co@=#i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'vendor'
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,16 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'common.custom_middleware.TokenAuthentication',
+    ],
+    'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S',
+}
+
 
 ROOT_URLCONF = 'VendorMngntSystem.urls'
 
