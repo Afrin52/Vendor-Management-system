@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'vendor'
+    'vendor',
 ]
 
 MIDDLEWARE = [
@@ -49,12 +49,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+# AUTH_USER_MODEL = "vendor.User"
 REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
-        'common.custom_middleware.TokenAuthentication',
     ],
     'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S',
 }

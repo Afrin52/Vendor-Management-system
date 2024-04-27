@@ -15,5 +15,5 @@ urlpatterns = [
     path('api/purchase_orders/', PurchaseOrderListCreateAPIView.as_view(), name='purchase-order-list-create'),
     path('api/purchase_orders/<int:pk>/', PurchaseOrderRetrieveUpdateDestroyAPIView.as_view(), name='purchase-order-retrieve-update-destroy'),
     path('api/vendors/<int:pk>/performance/', VendorPerformanceAPIView.as_view(), name='vendor-performance'),
-    path('api/acknowlwdge/<int:pk>/', acknowledge_purchase_order, name='vendor-acknowkedge'),
+    path('api/acknowledge/<int:pk>/', acknowledge_purchase_order, name='vendor-acknowledge'),
 ]
