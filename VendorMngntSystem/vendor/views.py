@@ -1,5 +1,5 @@
-from .models import Vendor, PurchaseOrder
-from .serializers import VendorSerializer, PurchaseOrderSerializer
+from .models import Vendor, PurchaseOrder, HistoricalPerformance
+from .serializers import VendorSerializer, PurchaseOrderSerializer, HistoricalPerformanceSerializer
 from rest_framework import generics
 from django.http import JsonResponse
 from rest_framework.response import Response
@@ -25,6 +25,15 @@ class PurchaseOrderListCreateAPIView(generics.ListCreateAPIView):
 class PurchaseOrderRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = PurchaseOrder.objects.all()
     serializer_class = PurchaseOrderSerializer
+
+
+class HistoricalPerformanceListCreateAPIView(generics.ListCreateAPIView):
+    queryset = HistoricalPerformance.objects.all()
+    serializer_class = HistoricalPerformanceSerializer
+
+class HistoricalPerformanceRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = HistoricalPerformance.objects.all()
+    serializer_class = HistoricalPerformanceSerializer
 
 class VendorPerformanceAPIView(generics.RetrieveAPIView):
     queryset = Vendor.objects.all()
