@@ -2,6 +2,7 @@ from .models import Vendor, PurchaseOrder
 from .serializers import VendorSerializer, PurchaseOrderSerializer
 from rest_framework import generics
 from django.http import JsonResponse
+from rest_framework.response import Response
 from vendor.calculations import calculate_on_time_delivery_rate, calculate_quality_rating_avg, calculate_average_response_time, \
 calculate_fulfillment_rate
 from django.views.decorators.http import require_GET, require_POST
@@ -30,31 +31,33 @@ class VendorPerformanceAPIView(generics.RetrieveAPIView):
     serializer_class = VendorSerializer
 
     def retrieve(self, request, *args, **kwargs):
+        vendor = self.get_object()
+        on_time_delivery_rate = calculate_on_time_delivery_rate(vendor)
+        quality_rating_avg = calculate_quality_rating_avg(vendor)
+        average_response_time = calculate_average_response_time(vendor)
+        fulfillment_rate = calculate_fulfillment_rate(vendor)
+
+        data = {
+            'on_time_delivery_rate': on_time_delivery_rate,
+            'quality_rating_avg': quality_rating_avg,
+            'average_response_time': average_response_time,
+            'fulfillment_rate': fulfillment_rate,
+        }
+        return Response(data)
+
+class AcknowledgePurchaseOrderAPIView(generics.UpdateAPIView):
+    queryset = PurchaseOrder.objects.all()
+    serializer_class = PurchaseOrderSerializer
+
+    def update(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
-            data = {
-                'on_time_delivery_rate': calculate_on_time_delivery_rate(instance),
-                'quality_rating_avg': calculate_quality_rating_avg(instance),
-                'average_response_time': calculate_average_response_time(instance),
-                'fulfillment_rate': calculate_fulfillment_rate(instance)
-            }
-            return JsonResponse(data)
-        except Vendor.DoesNotExist:
-            return JsonResponse({'error': 'Vendor not found'}, status=404)
+            instance.acknowledgment_date = timezone.now()
+            instance.save()
+            vendor = instance.vendor
+            vendor.average_response_time = calculate_average_response_time()
+            vendor.save()
 
-# API endpoint to acknowledge a purchase order
-@csrf_exempt
-@require_POST
-def acknowledge_purchase_order(request, po_id):
-    try:
-        po = PurchaseOrder.objects.get(pk=po_id)
-        po.acknowledgment_date = timezone.now()
-        po.save()
-        # Recalculate average response time
-        vendor = po.vendor
-        vendor.average_response_time = calculate_average_response_time(vendor)
-        vendor.save()
-        return JsonResponse({'message': 'Purchase order acknowledged successfully'})
-    except PurchaseOrder.DoesNotExist:
-        return JsonResponse({'error': 'Purchase order not found'}, status=404)
-    
+            return JsonResponse({'message': 'Purchase order acknowledged successfully'})
+        except PurchaseOrder.DoesNotExist:
+            return JsonResponse({'error': 'Purchase order not found'}, status=404)
